@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Turbo Drift Pro - Unified Edition</title>
+    <style>
+        body { margin: 0; background: #000; font-family: 'Arial', sans-serif; overflow: hidden; touch-action: none; }
+        #hud { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        /* Responsive Controls */
+        .mobile-controls { display: none; position: absolute; bottom: 20px; left: 20px; }
+        .desktop-hint { position: absolute; top: 20px; left: 20px; color: white; }
+    </style>
+</head>
+<body>
+    <div id="hud">
+        <div id="speedometer" style="position:absolute; bottom:20px; right:20px; color:white;">
+            <div id="speed-value">0</div> km/h
+        </div>
+        <div class="mobile-controls" id="mobile-ui">
+            <button id="btn-gas" style="pointer-events: auto; padding: 20px;">GAS</button>
+        </div>
+        <div class="desktop-hint" id="desktop-ui">Use WASD to Drive</div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+
+<script>
+/** * TURBO DRIFT PRO - UNIFIED ENGINE
+ * Built for Desktop & Mobile Compatibility
+ */
+class GameEngine {
+    constructor() {
+        this.isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+        this.canvas = document.getElementById('gameCanvas');
+        this.input = { gas: false, steer: 0 };
+        this.settings = JSON.parse(localStorage.getItem('game_config')) || { sensitivity: 5, graphics: 'high' };
+        
+        this.init();
+    }
+
+    init() {
+        this.setupUI();
+        this.setupControls();
+        console.log("Engine Initialized. Mobile Mode: " + this.isMobile);
+    }
+
+    setupUI() {
+        if (this.isMobile) {
+            document.getElementById('mobile-ui').style.display = 'block';
+            document.getElementById('desktop-ui').style.display = 'none';
+        }
+    }
+
+    setupControls() {
+        // Unified Control Logic
+        if (this.isMobile) {
+            document.getElementById('btn-gas').addEventListener('touchstart', () => this.input.gas = true);
+            document.getElementById('btn-gas').addEventListener('touchend', () => this.input.gas = false);
+        } else {
+            window.addEventListener('keydown', (e) => { if(e.code === 'KeyW') this.input.gas = true; });
+            window.addEventListener('keyup', (e) => { if(e.code === 'KeyW') this.input.gas = false; });
+        }
+    }
+
+    // For Selling: Easy to customize car library
+    getCarStats(carName) {
+        const library = {
+            'sport': { speed: 120, handling: 0.9 },
+            'muscle': { speed: 100, handling: 0.5 }
+        };
+        return library[carName] || library['sport'];
+    }
+}
+
+// Start Game
+const game = new GameEngine();
+
+// Boilerplate for loop
+function gameLoop() {
+    // 1. Update Physics
+    // 2. Render Graphics (Low vs High based on game.settings.graphics)
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
+</script>
+</body>
+</html>
